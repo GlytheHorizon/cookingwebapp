@@ -22,13 +22,13 @@ import { RecipeControls } from './recipe-controls';
 // Helper to convert Firestore Timestamps to JSON-serializable format for the client
 const serializeRecipe = (recipe: Recipe): Recipe => ({
   ...recipe,
-  petsaGawa: recipe.petsaGawa, // Will be serialized by Next.js
+  petsaGawa: (recipe.petsaGawa as Timestamp).toDate().toISOString(),
 });
 
-const serializeComments = (comments: Comment[]): Comment[] => 
+const serializeComments = (comments: Comment[]): Comment[] =>
   comments.map(comment => ({
     ...comment,
-    petsaGawa: comment.petsaGawa,
+    petsaGawa: (comment.petsaGawa as Timestamp).toDate().toISOString(),
   }));
 
 async function getRecipe(id: string): Promise<Recipe | null> {
@@ -77,7 +77,7 @@ export default async function RecipePage({ params }: { params: { id: string } })
             </div>
              <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>{recipe.petsaGawa.toDate().toLocaleDateString()}</span>
+                <span>{new Date(recipe.petsaGawa as string).toLocaleDateString()}</span>
             </div>
           </div>
           <RecipeControls recipeId={recipe.id} creatorId={recipe.ginawaNi} />

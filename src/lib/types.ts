@@ -10,7 +10,7 @@ export interface UserProfile {
 }
 
 export interface RecipeCategory {
-  id: string;
+  id:string;
   name: string;
 }
 
@@ -22,7 +22,7 @@ export interface Recipe {
   hakbang: string[];
   ginawaNi: string; // userId
   ginawaNiPangalan: string;
-  petsaGawa: Timestamp;
+  petsaGawa: Timestamp | string;
 }
 
 export interface Comment {
@@ -31,5 +31,5 @@ export interface Comment {
   userId: string;
   userPangalan: string;
   teksto: string;
-  petsaGawa: Timestamp;
+  petsaGawa: Timestamp | string;
 }

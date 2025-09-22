@@ -17,8 +17,8 @@ async function getHomePageData() {
     { id: '4', name: 'Inumin' },
   ];
   const recipes: Recipe[] = [
-    { id: '1', pamagat: 'Sample Recipe 1', kategorya: 'Ulam', ginawaNi: '1', ginawaNiPangalan: 'Mama', sangkap: [], hakbang: [], petsaGawa: Timestamp.now() },
-    { id: '2', pamagat: 'Sample Recipe 2', kategorya: 'Panghimagas', ginawaNi: '1', ginawaNiPangalan: 'Mama', sangkap: [], hakbang: [], petsaGawa: Timestamp.now() },
+    { id: '1', pamagat: 'Sample Recipe 1', kategorya: 'Ulam', ginawaNi: '1', ginawaNiPangalan: 'Mama', sangkap: [], hakbang: [], petsaGawa: Timestamp.now().toDate().toISOString() },
+    { id: '2', pamagat: 'Sample Recipe 2', kategorya: 'Panghimagas', ginawaNi: '1', ginawaNiPangalan: 'Mama', sangkap: [], hakbang: [], petsaGawa: Timestamp.now().toDate().toISOString() },
   ];
   
   return { categories, recipes };

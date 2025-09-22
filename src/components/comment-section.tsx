@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { addComment } from '@/lib/actions';
 import { Loader2 } from 'lucide-react';
 import { Separator } from './ui/separator';
+import { Timestamp } from 'firebase/firestore';
 
 const commentSchema = z.object({
   teksto: z.string().min(1, 'Comment cannot be empty.'),
@@ -57,7 +58,11 @@ export function CommentSection({ recipeId, comments: initialComments }: CommentS
     setIsLoading(false);
   };
   
-  const sortedComments = [...initialComments].sort((a, b) => b.petsaGawa.toMillis() - a.petsaGawa.toMillis());
+  const sortedComments = [...initialComments].sort((a, b) => {
+      const dateA = typeof a.petsaGawa === 'string' ? new Date(a.petsaGawa).getTime() : (a.petsaGawa as Timestamp).toMillis();
+      const dateB = typeof b.petsaGawa === 'string' ? new Date(b.petsaGawa).getTime() : (b.petsaGawa as Timestamp).toMillis();
+      return dateB - dateA;
+  });
 
   return (
     <Card>
@@ -91,7 +96,7 @@ export function CommentSection({ recipeId, comments: initialComments }: CommentS
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">{comment.userPangalan}</p>
                     <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(comment.petsaGawa.toDate(), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(comment.petsaGawa as string), { addSuffix: true })}
                     </p>
                   </div>
                   <p className="text-sm text-foreground">{comment.teksto}</p>
