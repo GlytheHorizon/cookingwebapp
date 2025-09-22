@@ -10,17 +10,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecipeCard } from '@/components/recipe-card';
 
-async function getCategories() {
+async function getHomePageData() {
   const categoriesCol = collection(db, COLLECTIONS.CATEGORIES);
-  const categorySnapshot = await getDocs(categoriesCol);
-  return categorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RecipeCategory));
+  const recipesQuery = query(collection(db, COLLECTIONS.RECIPES), orderBy('petsaGawa', 'desc'), limit(5));
+  
+  const [categorySnapshot, recipeSnapshot] = await Promise.all([
+    getDocs(categoriesCol),
+    getDocs(recipesQuery)
+  ]);
+
+  const categories = categorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RecipeCategory));
+  const recipes = recipeSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Recipe));
+  
+  return { categories, recipes };
 }
 
-async function getRecentRecipes() {
-  const recipesQuery = query(collection(db, COLLECTIONS.RECIPES), orderBy('petsaGawa', 'desc'), limit(5));
-  const recipeSnapshot = await getDocs(recipesQuery);
-  return recipeSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Recipe));
-}
 
 function CategoryList({ categories }: { categories: RecipeCategory[] }) {
   return (
@@ -77,6 +81,7 @@ function RecentRecipesSkeleton() {
 }
 
 export default async function HomePage() {
+  const { categories, recipes } = await getHomePageData();
   
   return (
     <div className="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
@@ -96,7 +101,11 @@ export default async function HomePage() {
                 Mga Kategorya ng Recipe
             </h2>
             <Suspense fallback={<CategoriesSkeleton />}>
-                <CategoryListLoader />
+                {categories.length === 0 ? (
+                    <p className='text-muted-foreground'>Wala pang mga kategorya.</p>
+                ) : (
+                    <CategoryList categories={categories} />
+                )}
             </Suspense>
         </div>
 
@@ -106,27 +115,14 @@ export default async function HomePage() {
                 Mga Bagong Recipe
             </h2>
             <Suspense fallback={<RecentRecipesSkeleton />}>
-                <RecentRecipesLoader />
+                 {recipes.length === 0 ? (
+                    <p className='text-muted-foreground'>Wala pang mga recipe. Maging una sa pag-post!</p>
+                ) : (
+                    <RecentRecipes recipes={recipes} />
+                )}
             </Suspense>
         </div>
       </div>
     </div>
   );
-}
-
-async function CategoryListLoader() {
-    const categories = await getCategories();
-    if (categories.length === 0) {
-        return <p className='text-muted-foreground'>Wala pang mga kategorya.</p>
-    }
-    return <CategoryList categories={categories} />;
-}
-
-
-async function RecentRecipesLoader() {
-    const recipes = await getRecentRecipes();
-    if (recipes.length === 0) {
-        return <p className='text-muted-foreground'>Wala pang mga recipe. Maging una sa pag-post!</p>
-    }
-    return <RecentRecipes recipes={recipes} />;
 }
